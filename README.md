@@ -10,7 +10,7 @@ MLang is a simple, custom programming language with its own grammar, parser, and
 - Expression evaluation and future control flow support (if, while, for)
 
 ## 🛠️ Project Structure
-
+```bash
 MLANG/
 ├── src/               # Source files and grammar
 │   ├── MLang.g4
@@ -21,6 +21,7 @@ MLANG/
 ├── lib/               # ANTLR JAR file
 ├── README.md
 ├── .gitignore
+``` 
 
 ## 🔧 How to Build and Run
 
