@@ -28,24 +28,29 @@ MLANG/
 
 ```bash
 java -jar lib/antlr-4.13.1-complete.jar -Dlanguage=Java -o gen src/MLang.g4
+```
 
-2. Compile All Java Files
+### 2. Compile All Java Files
 
+```bash
 javac -cp "lib/antlr-4.13.1-complete.jar" -d bin gen/*.java src/**/*.java
+```
 
-3. Run the Test
+### 3. Run the Test
 
+```bash
 java -cp "bin:lib/antlr-4.13.1-complete.jar" TestMLang
+```
 
-✅ Sample Input
+### ✅ Sample Input
 
 x > int = 5;
 
-📚 Dependencies
+### 📚 Dependencies
 	•	Java 11+ (JDK)
 	•	ANTLR 4.13.1 JAR (in lib/ directory)
 
-🧠 Author
+### 🧠 Author
 
 Mudit Golchha
 Binghamton University — CS571
