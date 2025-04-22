@@ -7,10 +7,15 @@ program     : stmt* EOF ;
 stmt
     : varDecl
     | exprStmt
+    | ifStmt
     ;
 
 varDecl     : ID '>' type '=' expr ';' ;
 exprStmt    : expr ';' ;
+
+ifStmt      : 'if' '(' expr ')' block ('else' block)? ;
+
+block       : '[' stmt* ']' ;
 
 expr
     : expr op=('*'|'/') expr     # MulDivExpr

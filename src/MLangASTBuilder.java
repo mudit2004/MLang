@@ -1,6 +1,9 @@
 import ast.*;
 import java.util.ArrayList;
 import java.util.List;
+//import .antlr.MLangParser;
+//import org.antlr.v4.runtime.tree.*;
+//import MLangParser; // if no package
 
 public class MLangASTBuilder extends MLangBaseVisitor<ASTNode> {
 
@@ -56,4 +59,18 @@ public class MLangASTBuilder extends MLangBaseVisitor<ASTNode> {
     }
 
     // Add more visit methods later (e.g., comparisons, booleans, if, while, etc.)
+    @Override
+    public ASTNode visitIfStmt(MLangParser.IfStmtContext ctx) {
+        ExprNode condition = (ExprNode) visit(ctx.expr());
+        StmtNode thenBranch = new BlockNode(ctx.block(0).stmt().stream()
+            .map(stmt -> (StmtNode) visit(stmt))
+            .toList());
+        StmtNode elseBranch = null;
+        if (ctx.block().size() > 1) {
+            elseBranch = new BlockNode(ctx.block(1).stmt().stream()
+                .map(stmt -> (StmtNode) visit(stmt))
+                .toList());
+        }
+        return new IfStmtNode(condition, thenBranch, elseBranch);
+    }
 }

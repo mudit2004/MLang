@@ -1,11 +1,16 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+
+//import .antlr.MLangLexer;
+//import .antlr.MLangParser;
 import ast.*;
 
 public class TestMLang {
     public static void main(String[] args) throws Exception {
         // Sample input
-        String inputCode = "x > int = 5;";
+        //String inputCode = "x > int = 5;";
+        //String inputCode = "x > int = 1 + 2;";
+        String inputCode = "if (1) [ x > int = 2; ] else [ x > int = 3; ]";
 
         // Step 1: Run ANTLR lexer and parser
         CharStream input = CharStreams.fromString(inputCode);
@@ -46,7 +51,22 @@ public class TestMLang {
             System.out.println(indentStr + "BinaryOp: " + bin.op);
             printAST(bin.left, indent + 1);
             printAST(bin.right, indent + 1);
-        } else {
+        } else if (node instanceof IfStmtNode ifNode) {
+            System.out.println(indentStr + "IfStmt");
+            System.out.println(indentStr + "  Condition:");
+            printAST(ifNode.condition, indent + 2);
+            System.out.println(indentStr + "  Then:");
+            printAST(ifNode.thenBranch, indent + 2);
+            if (ifNode.elseBranch != null) {
+                System.out.println(indentStr + "  Else:");
+                printAST(ifNode.elseBranch, indent + 2);
+            }
+        } else if (node instanceof BlockNode block) {
+            System.out.println(indentStr + "Block");
+            for (StmtNode stmt : block.statements) {
+                printAST(stmt, indent + 1);
+            }
+        }else {
             System.out.println(indentStr + "Unknown node: " + node.getClass().getSimpleName());
         }
     }
