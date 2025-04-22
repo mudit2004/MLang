@@ -18,11 +18,11 @@ public class MLangASTBuilder extends MLangBaseVisitor<ASTNode> {
     }
 
     @Override
-    public ASTNode visitVarDecl(MLangParser.VarDeclContext ctx) {
+    public ASTNode visitLetDecl(MLangParser.LetDeclContext ctx) {
         String id = ctx.ID().getText();
         String type = ctx.type().getText();
         ExprNode expr = (ExprNode) visit(ctx.expr());
-        return new VarDeclNode(id, type, expr);
+        return new LetDeclNode(id, type, expr); 
     }
 
     @Override
@@ -72,5 +72,35 @@ public class MLangASTBuilder extends MLangBaseVisitor<ASTNode> {
                 .toList());
         }
         return new IfStmtNode(condition, thenBranch, elseBranch);
+    }
+
+    @Override
+    public ASTNode visitCompExpr(MLangParser.CompExprContext ctx) {
+        String op = ctx.op.getText();
+        ExprNode left = (ExprNode) visit(ctx.expr(0));
+        ExprNode right = (ExprNode) visit(ctx.expr(1));
+        return new BinaryOpNode(op, left, right);
+    }
+
+    @Override
+    public ASTNode visitShowStmt(MLangParser.ShowStmtContext ctx) {
+        ExprNode expr = (ExprNode) visit(ctx.expr());
+        return new ShowStmtNode(expr);
+    }
+
+    @Override
+    public ASTNode visitWhileStmt(MLangParser.WhileStmtContext ctx) {
+        ExprNode condition = (ExprNode) visit(ctx.expr());
+        StmtNode body = new BlockNode(ctx.block().stmt().stream()
+            .map(stmt -> (StmtNode) visit(stmt))
+            .toList());
+        return new WhileStmtNode(condition, body);
+    }
+
+    @Override
+    public ASTNode visitAssignStmt(MLangParser.AssignStmtContext ctx) {
+        String id = ctx.ID().getText();
+        ExprNode expr = (ExprNode) visit(ctx.expr());
+        return new AssignStmtNode(id, expr);
     }
 }

@@ -1,5 +1,7 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 //import .antlr.MLangLexer;
 //import .antlr.MLangParser;
@@ -10,7 +12,9 @@ public class TestMLang {
         // Sample input
         //String inputCode = "x > int = 5;";
         //String inputCode = "x > int = 1 + 2;";
-        String inputCode = "if (1) [ x > int = 2; ] else [ x > int = 3; ]";
+        //String inputCode = "if (1) [ x > int = 2; ] else [ x > int = 3; ]";
+        //String inputCode = Files.readString(Paths.get("tests/test.ml"));
+        String inputCode = Files.readString(Paths.get("tests/assign_while_show.ml"));
 
         // Step 1: Run ANTLR lexer and parser
         CharStream input = CharStreams.fromString(inputCode);
@@ -37,7 +41,7 @@ public class TestMLang {
             for (StmtNode stmt : prog.statements) {
                 printAST(stmt, indent + 1);
             }
-        } else if (node instanceof VarDeclNode decl) {
+        } else if (node instanceof LetDeclNode decl) {
             System.out.println(indentStr + "VarDecl: " + decl.identifier + " > " + decl.type);
             printAST(decl.expression, indent + 1);
         } else if (node instanceof ExprStmtNode stmt) {
@@ -66,6 +70,18 @@ public class TestMLang {
             for (StmtNode stmt : block.statements) {
                 printAST(stmt, indent + 1);
             }
+        }else if (node instanceof ShowStmtNode show) {
+            System.out.println(indentStr + "Show");
+            printAST(show.expression, indent + 1);
+        }else if (node instanceof WhileStmtNode loop) {
+            System.out.println(indentStr + "WhileStmt");
+            System.out.println(indentStr + "  Condition:");
+            printAST(loop.condition, indent + 2);
+            System.out.println(indentStr + "  Body:");
+            printAST(loop.body, indent + 2);
+        }else if (node instanceof AssignStmtNode assign) {
+            System.out.println(indentStr + "Assign: " + assign.identifier);
+            printAST(assign.expression, indent + 1);
         }else {
             System.out.println(indentStr + "Unknown node: " + node.getClass().getSimpleName());
         }

@@ -5,23 +5,33 @@ grammar MLang;
 program     : stmt* EOF ;
 
 stmt
-    : varDecl
+    : letDecl
+    | assignStmt
     | exprStmt
     | ifStmt
+    | whileStmt
+    | showStmt
     ;
 
-varDecl     : ID '>' type '=' expr ';' ;
+letDecl     : 'let' ID '>' type '=' expr ';' ;
 exprStmt    : expr ';' ;
 
 ifStmt      : 'if' '(' expr ')' block ('else' block)? ;
 
+whileStmt : 'while' '(' expr ')' block ;
+
+showStmt : 'show' '(' expr ')' ';' ;
+
+assignStmt : ID '=' expr ';' ;
+
 block       : '[' stmt* ']' ;
 
 expr
-    : expr op=('*'|'/') expr     # MulDivExpr
-    | expr op=('+'|'-') expr     # AddSubExpr
-    | INT                        # IntLiteral
-    | ID                         # IdExpr
+    : expr op=('==' | '!=' | '<' | '<=' | '>' | '>=') expr # CompExpr
+    | expr op=('*'|'/') expr                               # MulDivExpr
+    | expr op=('+'|'-') expr                               # AddSubExpr
+    | INT                                                  # IntLiteral
+    | ID                                                   # IdExpr
     ;
 
 type        : 'int' | 'float' | 'bool' ;
