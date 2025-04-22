@@ -49,7 +49,6 @@ From the `MLANG/` root directory:
 
 ```bash
 make                             # Builds everything (ANTLR, Java)
-java -cp bin TestMLang           # Runs TestMLang on default file
 ```
 
 To run a specific test file:
@@ -60,8 +59,8 @@ String inputCode = Files.readString(Paths.get("tests/loop_test.ml"));
 
 Then re-run:
 ```bash
+make clean
 make
-java -cp bin TestMLang
 ```
 
 ---
