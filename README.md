@@ -1,57 +1,96 @@
 # MLang 🧠
 
-MLang is a simple, custom programming language with its own grammar, parser, and AST — built using ANTLR4 and Java.
+**MLang** is a custom programming language with a unique syntax and structure, built using **ANTLR4** and Java. It supports arithmetic expressions, variable declarations, `if`/`else` conditionals, and block scoping using square brackets.
 
-## 🚀 Features
+---
 
-- Custom grammar (`MLang.g4`) using ANTLR
-- Custom AST classes in Java
-- Parser + AST builder (`MLangASTBuilder`)
-- Expression evaluation and future control flow support (if, while, for)
+## 🚀 Features Implemented
 
-## 🛠️ Project Structure
+### ✅ Language Constructs
+- Variable declarations: `x > int = 5;`
+- Arithmetic expressions: `x + 3 * 4;`
+- Expression statements
+- **If-Else conditionals**: `if (x) [ ... ] else [ ... ]`
+- **Block support** using square brackets: `[ stmt1; stmt2; ]`
+
+### ✅ Parsing + AST
+- Custom grammar using `ANTLR4` (`MLang.g4`)
+- Clean AST design with nodes like:
+  - `ProgramNode`, `VarDeclNode`, `ExprStmtNode`
+  - `BinaryOpNode`, `IntLiteralNode`, `IdNode`
+  - `IfStmtNode`, `BlockNode`
+- Custom AST Builder: `MLangASTBuilder.java` using `MLangBaseVisitor`
+- AST Pretty Printer: shows structure of parsed code clearly
+
+### ✅ Build System
+- Fully functional `Makefile`:
+  - Handles ANTLR generation
+  - Compiles all source and generated files
+  - Runs the test driver
+  - Cleans build artifacts
+
+---
+
+## 📦 Project Structure
 ```bash
 MLANG/
-├── src/               # Source files and grammar
-│   ├── MLang.g4
-│   ├── TestMLang.java
-│   └── ast/           # AST classes
-├── gen/               # Generated ANTLR files (ignored in Git)
-├── bin/               # Compiled .class files (ignored in Git)
-├── lib/               # ANTLR JAR file
-├── README.md
-├── .gitignore
-``` 
+├── src/
+│   ├── MLang.g4                # ANTLR grammar
+│   ├── TestMLang.java          # Main driver with pretty-printer
+│   ├── MLangASTBuilder.java    # AST builder from parse tree
+│   └── ast/                    # Custom AST nodes
+├── gen/                        # ANTLR-generated parser/lexer
+├── bin/                        # Compiled .class files
+├── lib/                        # antlr-4.13.1-complete.jar
+├── Makefile                    # Build & run automation
+└── README.md
+```
+---
 
-## 🔧 How to Build and Run
+## ⚠️ Challenges Encountered
 
-### 1. Generate ANTLR Lexer and Parser
+- **ANTLR output folder issue** (`gen/src/`):  
+  Fixed by running ANTLR from within `src/` with output to `../gen/`.
 
-```bash
-java -jar lib/antlr-4.13.1-complete.jar -Dlanguage=Java -o gen src/MLang.g4
+- **Wildcard compilation failure after clean**:  
+  Solved using `$(wildcard gen/*.java)` in the Makefile.
+
+- **Broken Java import statements**:  
+  Removed invalid `import .antlr...` and relied on classpath.
+
+- **Makefile dependency resolution**:  
+  Used `gen/MLangParser.java` as target to ensure proper ordering.
+
+---
+
+## 🧪 Sample Input
+
+```mlang
+if (1) [ x > int = 2; ] else [ x > int = 3; ]
 ```
 
-### 2. Compile All Java Files
+## Sample Output (AST)
 
-```bash
-javac -cp "lib/antlr-4.13.1-complete.jar" -d bin gen/*.java src/**/*.java
+```mlang
+Program
+  IfStmt
+    Condition:
+      IntLiteral: 1
+    Then:
+      Block
+        VarDecl: x > int
+          IntLiteral: 2
+    Else:
+      Block
+        VarDecl: x > int
+          IntLiteral: 3
 ```
 
-### 3. Run the Test
 
-```bash
-java -cp "bin:lib/antlr-4.13.1-complete.jar" TestMLang
-```
+⸻
 
-### ✅ Sample Input
-
-x > int = 5;
-
-### 📚 Dependencies
-	•	Java 11+ (JDK)
-	•	ANTLR 4.13.1 JAR (in lib/ directory)
-
-### 🧠 Author
+🧠 Author
 
 Mudit Golchha
-Binghamton University — CS571
+CS571 – Programming Languages
+Binghamton University
