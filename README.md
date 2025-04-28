@@ -1,39 +1,76 @@
+
 # MLang 🧠
 
-**MLang** is a custom programming language with a unique syntax and structure, built using **ANTLR4** and Java. It supports arithmetic expressions, variable declarations, `if`/`else` conditionals, `while` loops, assignments, and block scoping using square brackets.
+**MLang** is a custom programming language with a unique syntax and structure, built using **ANTLR4** and Java.  
+It supports variables, arithmetic expressions, control flow (`if`, `while`), output (`show`), and block scoping.
 
 ---
 
 ## 🚀 Features Implemented
 
 ### ✅ Language Constructs
-- Variable declarations: `let x > int = 5;`
-- Arithmetic expressions: `x + 3 * 4;`
-- Expression statements: `x + y;`
-- Assignments: `x = x + 1;`
-- `show(...)` for printing values
-- `if-else` conditionals: `if (x) [ ... ] else [ ... ]`
-- `while` loops: `while (x < 5) [ ... ]`
-- Block scoping using square brackets: `[ stmt1; stmt2; ]`
+- **Variable declarations** (with `let`)
+  ```mlang
+  let x > int = 5;
+  ```
+- **Assignments**
+  ```mlang
+  x = x + 1;
+  ```
+- **Arithmetic expressions**
+  ```mlang
+  x + 3 * 4;
+  ```
+- **Comparison expressions**
+  ```mlang
+  if (x == 0) [ ... ]
+  ```
+- **`show(...)` for printing values**
+  ```mlang
+  show(x);
+  ```
+- **`if-else` control flow**
+  ```mlang
+  if (x > 0) [ show(1); ] else [ show(0); ]
+  ```
+- **`while` loops**
+  ```mlang
+  while (x < 5) [ ... ]
+  ```
+- **Block scoping** using square brackets
+  ```mlang
+  [ stmt1; stmt2; ]
+  ```
 
 ---
 
 ### ✅ Parsing + AST
-- Custom grammar using `ANTLR4` (`MLang.g4`)
-- AST node hierarchy:
+- **ANTLR4 Grammar** (`MLang.g4`) custom defined
+- **AST Node Hierarchy**:
   - `ProgramNode`, `LetDeclNode`, `AssignStmtNode`, `ExprStmtNode`
   - `BinaryOpNode`, `IntLiteralNode`, `IdNode`
   - `IfStmtNode`, `WhileStmtNode`, `ShowStmtNode`, `BlockNode`
-- AST built via `MLangASTBuilder.java` using ANTLR’s `MLangBaseVisitor`
-- Pretty-printer (`TestMLang.java`) to visually debug the AST
+- **AST built** via `MLangASTBuilder.java` using ANTLR `MLangBaseVisitor`
+- **AST pretty-printer** (`printAST`) for visualization
+
+---
+
+### ✅ Interpreter
+- **Interpreter implemented** (`runtime/Interpreter.java`)
+- Executes programs by visiting AST nodes:
+  - Variable Environment Management
+  - Expression Evaluation
+  - Control Flow Execution (`if`, `while`)
+  - Output to Console using `show`
+- Handles both **integer** and **boolean** conditions
 
 ---
 
 ## 🛠️ Build & Execution Instructions
 
 ### 📂 Adding Test Files
-- Place your test files (with `.ml` extension) in the `tests/` folder.
-- Example: `tests/loop_test.ml`
+- Place `.ml` test programs inside the `tests/` folder.
+- Example: `tests/assign_while_show.ml`
 
 ```mlang
 let i > int = 0;
@@ -48,84 +85,106 @@ while (i < 3) [
 From the `MLANG/` root directory:
 
 ```bash
-make                             # Builds everything (ANTLR, Java)
-```
-
-To run a specific test file:
-Edit `TestMLang.java`:
-```java
-String inputCode = Files.readString(Paths.get("tests/loop_test.ml"));
-```
-
-Then re-run:
-```bash
 make clean
 make
+make run
 ```
+
+✅ `make` handles ANTLR code generation, Java compilation, and execution.
+
+**To run a specific test file**:  
+Edit `TestMLang.java`:
+
+```java
+String inputCode = Files.readString(Paths.get("tests/assign_while_show.ml"));
+```
+
+Then rerun `make run`.
 
 ---
 
 ## 📦 Project Structure
-```bash
+
+```
 MLANG/
 ├── src/
-│   ├── MLang.g4                # ANTLR grammar
-│   ├── MLangASTBuilder.java    # AST builder from parse tree
-│   ├── TestMLang.java          # Main driver with AST printer
-│   └── ast/                    # Custom AST node classes
-├── gen/                        # ANTLR-generated parser/lexer
-├── bin/                        # Compiled .class files
-├── lib/                        # antlr-4.13.1-complete.jar
-├── tests/                      # .ml test files go here ✅
-├── Makefile                    # Build automation
+│   ├── MLang.g4               # ANTLR grammar
+│   ├── MLangASTBuilder.java   # AST builder
+│   ├── TestMLang.java         # Main driver (AST print + Interpreter run)
+│   ├── ast/                   # AST Node classes
+│   └── runtime/               # Interpreter and Environment
+├── gen/                       # ANTLR-generated parser and lexer
+├── bin/                       # Compiled .class files
+├── lib/                       # antlr-4.13.1-complete.jar
+├── tests/                     # Test programs (.ml)
+├── Makefile                   # Build automation
 └── README.md
+```
+
+---
+
+## 🧪 Sample Input Program
+
+```mlang
+let i > int = 0;
+while (i < 3) [
+    show(i);
+    i = i + 1;
+]
+```
+
+### 📖 Sample AST Output
+
+```
+Program
+  VarDecl: i > int
+    IntLiteral: 0
+  WhileStmt
+    Condition:
+      BinaryOp: <
+        Id: i
+        IntLiteral: 3
+    Body:
+      Block
+        Show
+          Id: i
+        Assign: i
+          BinaryOp: +
+            Id: i
+            IntLiteral: 1
+```
+
+### 📤 Sample Execution Output
+
+```
+0
+1
+2
 ```
 
 ---
 
 ## ⚠️ Challenges Encountered
 
-- **ANTLR output folder issue** (`gen/src/`):  
-  Fixed by running ANTLR from within `src/` with output to `../gen/`.
+- **ANTLR Output Directory Problems**:  
+  Fixed by running ANTLR from `src/` with output to `gen/`.
 
-- **Wildcard compilation failure after clean**:  
-  Solved using `$(wildcard gen/*.java)` in the Makefile.
+- **Classpath and Compilation Issues**:  
+  Used `$(wildcard gen/*.java)` and explicitly included `src/runtime/*.java`.
 
-- **Broken Java import statements**:  
-  Removed invalid `import .antlr...` and relied on proper classpath.
+- **Parser Condition Handling**:  
+  Updated interpreter to allow both `boolean` and `integer` conditions for `if` and `while`.
 
-- **Makefile dependency resolution**:  
-  Used `gen/MLangParser.java` as target to ensure correct order.
+- **Broken AST builds on invalid syntax**:  
+  Improved testing and syntax error checks in `.ml` files.
 
 ---
 
-## 🧪 Sample Input
-
-```mlang
-let x > int = 1;
-if (x == 1) [ show(x); ] else [ show(0); ]
-```
-
-## 🧾 Sample Output (AST)
-
-```mlang
-Program
-  VarDecl: x > int
-    IntLiteral: 1
-  IfStmt
-    Condition:
-      BinaryOp: ==
-        Id: x
-        IntLiteral: 1
-    Then:
-      Block
-        Show
-          Id: x
-    Else:
-      Block
-        Show
-          IntLiteral: 0
-```
+## 📜 Future Extensions
+- Add `float` and `bool` types fully (currently only `int` supported)
+- Add `function` definitions and calls
+- Add `arrays`, `for` loops, and standard library support
+- Improve parser error messages (currently minimal error recovery)
 
 ---
 
