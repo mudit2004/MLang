@@ -87,7 +87,6 @@ From the `MLANG/` root directory:
 ```bash
 make clean
 make
-make run
 ```
 
 ✅ `make` handles ANTLR code generation, Java compilation, and execution.
@@ -99,7 +98,7 @@ Edit `TestMLang.java`:
 String inputCode = Files.readString(Paths.get("tests/assign_while_show.ml"));
 ```
 
-Then rerun `make run`.
+Then rerun `make`.
 
 ---
 
