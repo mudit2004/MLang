@@ -9,6 +9,10 @@ public class BlockNode extends StmtNode {
         this.statements = statements;
     }
 
+    public List<StmtNode> statements() {
+        return statements;
+    }
+
     @Override
     public <T> T accept(ASTVisitor<T> visitor) {
         return visitor.visitBlock(this);

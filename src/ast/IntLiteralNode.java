@@ -7,6 +7,10 @@ public class IntLiteralNode extends ExprNode {
         this.value = value;
     }
 
+    public int value() {
+        return value;
+    }
+
     @Override
     public <T> T accept(ASTVisitor<T> visitor) {
         return visitor.visitIntLiteral(this);

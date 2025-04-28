@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 
 //import .antlr.MLangLexer;
 //import .antlr.MLangParser;
+import runtime.Interpreter;
 import ast.*;
 
 public class TestMLang {
@@ -31,6 +32,10 @@ public class TestMLang {
 
         // Step 4: Print AST using a simple printer
         printAST(ast, 0);
+
+        // ✅ Step 5: Interpret the AST (NEW)
+        Interpreter interpreter = new Interpreter();
+        ast.accept(interpreter);
     }
 
     // A simple recursive AST pretty-printer

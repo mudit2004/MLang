@@ -16,8 +16,8 @@ $(GEN_DIR)/MLangParser.java: $(GRAMMAR)
 
 # Compile everything (after gen is complete)
 build: $(GEN_DIR)/MLangParser.java
-	javac -cp $(ANTLR_JAR) -d $(BIN_DIR) $(wildcard $(GEN_DIR)/*.java) $(SRC_DIR)/ast/*.java $(SRC_DIR)/MLangASTBuilder.java $(SRC_DIR)/TestMLang.java
-	
+	javac -cp $(ANTLR_JAR) -d $(BIN_DIR) $(wildcard $(GEN_DIR)/*.java) $(SRC_DIR)/ast/*.java $(SRC_DIR)/runtime/*.java $(SRC_DIR)/MLangASTBuilder.java $(SRC_DIR)/TestMLang.java
+
 # Run the program
 run: build
 	java -cp $(CLASSPATH) TestMLang

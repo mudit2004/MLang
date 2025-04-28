@@ -11,6 +11,18 @@ public class IfStmtNode extends StmtNode {
         this.elseBranch = elseBranch;
     }
 
+    public ExprNode condition() {
+        return condition;
+    }
+
+    public StmtNode thenBlock() {
+        return thenBranch;
+    }
+
+    public StmtNode elseBlock() {
+        return elseBranch;
+    }
+
     @Override
     public <T> T accept(ASTVisitor<T> visitor) {
         return visitor.visitIfStmt(this);

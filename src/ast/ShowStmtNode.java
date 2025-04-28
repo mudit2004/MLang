@@ -7,6 +7,10 @@ public class ShowStmtNode extends StmtNode {
         this.expression = expression;
     }
 
+    public ExprNode expression() {
+        return expression;
+    }
+
     @Override
     public <T> T accept(ASTVisitor<T> visitor) {
         return visitor.visitShowStmt(this);

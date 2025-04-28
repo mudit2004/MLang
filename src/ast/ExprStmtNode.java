@@ -7,6 +7,10 @@ public class ExprStmtNode extends StmtNode {
         this.expr = expr;
     }
 
+    public ExprNode expression() {
+        return expr;
+    }
+
     @Override
     public <T> T accept(ASTVisitor<T> visitor) {
         return visitor.visitExprStmt(this);

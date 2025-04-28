@@ -11,6 +11,18 @@ public class BinaryOpNode extends ExprNode {
         this.right = right;
     }
 
+    public String operator() {
+        return op;
+    }
+
+    public ExprNode left() {
+        return left;
+    }
+
+    public ExprNode right() {
+        return right;
+    }
+
     @Override
     public <T> T accept(ASTVisitor<T> visitor) {
         return visitor.visitBinaryOp(this);

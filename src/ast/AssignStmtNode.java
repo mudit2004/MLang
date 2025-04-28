@@ -9,6 +9,14 @@ public class AssignStmtNode extends StmtNode {
         this.expression = expression;
     }
 
+    public String name() {
+        return identifier;
+    }
+    
+    public ExprNode expression() {
+        return expression;
+    }
+
     @Override
     public <T> T accept(ASTVisitor<T> visitor) {
         return visitor.visitAssignStmt(this);

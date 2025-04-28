@@ -7,6 +7,10 @@ public class IdNode extends ExprNode {
         this.name = name;
     }
 
+    public String name() {
+        return name;
+    }
+
     @Override
     public <T> T accept(ASTVisitor<T> visitor) {
         return visitor.visitId(this);
