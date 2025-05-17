@@ -13,4 +13,7 @@ public interface ASTVisitor<T> {
     T visitShowStmt(ShowStmtNode node);
     T visitWhileStmt(WhileStmtNode node);
     T visitAssignStmt(AssignStmtNode node);
+    T visitFuncDecl(FuncDeclNode node);
+    T visitFuncCall(FuncCallNode node);
+    T visitReturnStmt(ReturnStmtNode node);
 }

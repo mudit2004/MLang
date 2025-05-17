@@ -1,8 +1,14 @@
 grammar MLang;
 
-// --- PARSER RULES ---
+// ==============================
+//          Parser Rules
+// ==============================
 
-program     : stmt* EOF ;
+program
+    : stmt* EOF
+    ;
+
+// --- Statements ---
 
 stmt
     : letDecl
@@ -11,34 +17,100 @@ stmt
     | ifStmt
     | whileStmt
     | showStmt
+    | funcDecl
+    | returnStmt
     ;
 
-letDecl     : 'let' ID '>' type '=' expr ';' ;
-exprStmt    : expr ';' ;
+// Variable declaration
+letDecl
+    : 'let' ID '>' type '=' expr ';'
+    ;
 
-ifStmt      : 'if' '(' expr ')' block ('else' block)? ;
+// Variable assignment
+assignStmt
+    : ID '=' expr ';'
+    ;
 
-whileStmt : 'while' '(' expr ')' block ;
+// Expression as a statement
+exprStmt
+    : expr ';'
+    ;
 
-showStmt : 'show' '(' expr ')' ';' ;
+// If-Else
+ifStmt
+    : 'if' '(' expr ')' block ('else' block)?
+    ;
 
-assignStmt : ID '=' expr ';' ;
+// While loop
+whileStmt
+    : 'while' '(' expr ')' block
+    ;
 
-block       : '[' stmt* ']' ;
+// Output
+showStmt
+    : 'show' '(' expr ')' ';'
+    ;
+
+// Function declaration
+funcDecl
+    : 'func' ID '(' params? ')' '>' type block
+    ;
+
+// Return statement
+returnStmt
+    : 'return' expr ';'
+    ;
+
+// Block of statements
+block
+    : '[' stmt* ']'
+    ;
+
+// Function parameters
+params
+    : param (',' param)*
+    ;
+
+param
+    : ID '>' type
+    ;
+
+// Function call arguments
+arguments
+    : expr (',' expr)*
+    ;
+
+// --- Expressions ---
 
 expr
-    : expr op=('==' | '!=' | '<' | '<=' | '>' | '>=') expr # CompExpr
-    | expr op=('*'|'/') expr                               # MulDivExpr
-    | expr op=('+'|'-') expr                               # AddSubExpr
-    | INT                                                  # IntLiteral
-    | ID                                                   # IdExpr
+    : expr op=('==' | '!=' | '<' | '<=' | '>' | '>=') expr   # CompExpr
+    | expr op=('*' | '/') expr                               # MulDivExpr
+    | expr op=('+' | '-') expr                               # AddSubExpr
+    | ID '(' arguments? ')'                                  # FuncCallExpr
+    | INT                                                    # IntLiteral
+    | ID                                                     # IdExpr
     ;
 
-type        : 'int' | 'float' | 'bool' ;
+// --- Types ---
 
-// --- LEXER RULES ---
+type
+    : 'int'
+    | 'float'
+    | 'bool'
+    ;
 
-ID          : [a-zA-Z_][a-zA-Z_0-9]* ;
-INT         : [0-9]+ ;
+// ==============================
+//          Lexer Rules
+// ==============================
 
-WS          : [ \t\r\n]+ -> skip ;
+ID
+    : [a-zA-Z_][a-zA-Z_0-9]*
+    ;
+
+INT
+    : [0-9]+
+    ;
+
+WS
+    : [ \t\r\n]+ -> skip
+    ;

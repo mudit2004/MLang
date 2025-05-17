@@ -15,7 +15,7 @@ public class TestMLang {
         //String inputCode = "x > int = 1 + 2;";
         //String inputCode = "if (1) [ x > int = 2; ] else [ x > int = 3; ]";
         //String inputCode = Files.readString(Paths.get("tests/test.ml"));
-        String inputCode = Files.readString(Paths.get("tests/assign_while_show.ml"));
+        String inputCode = Files.readString(Paths.get("tests/function_add_test.ml"));
 
         // Step 1: Run ANTLR lexer and parser
         CharStream input = CharStreams.fromString(inputCode);
@@ -87,6 +87,21 @@ public class TestMLang {
         }else if (node instanceof AssignStmtNode assign) {
             System.out.println(indentStr + "Assign: " + assign.identifier);
             printAST(assign.expression, indent + 1);
+        }else if (node instanceof FuncDeclNode fn) {
+            System.out.println(indentStr + "FuncDecl: " + fn.name + " > " + fn.returnType);
+            for (var param : fn.parameters) {
+                System.out.println(indentStr + "  Param: " + param.name + " > " + param.type);
+            }
+            System.out.println(indentStr + "  Body:");
+            printAST(fn.body, indent + 2);
+        }else if (node instanceof FuncCallNode call) {
+            System.out.println(indentStr + "FuncCall: " + call.name);
+            for (ExprNode arg : call.arguments) {
+                printAST(arg, indent + 1);
+            }
+        }else if (node instanceof ReturnStmtNode ret) {
+            System.out.println(indentStr + "Return");
+            printAST(ret.expression, indent + 1);
         }else {
             System.out.println(indentStr + "Unknown node: " + node.getClass().getSimpleName());
         }

@@ -1,6 +1,7 @@
 import ast.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 //import .antlr.MLangParser;
 //import org.antlr.v4.runtime.tree.*;
 //import MLangParser; // if no package
@@ -102,5 +103,46 @@ public class MLangASTBuilder extends MLangBaseVisitor<ASTNode> {
         String id = ctx.ID().getText();
         ExprNode expr = (ExprNode) visit(ctx.expr());
         return new AssignStmtNode(id, expr);
+    }
+
+    @Override
+    public ASTNode visitFuncDecl(MLangParser.FuncDeclContext ctx) {
+        String name = ctx.ID().getText();
+        String returnType = ctx.type().getText();
+
+        List<FuncDeclNode.Param> params = new ArrayList<>();
+        if (ctx.params() != null) {
+            for (MLangParser.ParamContext paramCtx : ctx.params().param()) {
+                String paramName = paramCtx.ID().getText();
+                String paramType = paramCtx.type().getText();
+                params.add(new FuncDeclNode.Param(paramName, paramType));
+            }
+        }
+
+        BlockNode body = new BlockNode(ctx.block().stmt().stream()
+            .map(stmt -> (StmtNode) visit(stmt))
+            .toList());
+
+        return new FuncDeclNode(name, params, returnType, body);
+    }
+
+    @Override
+    public ASTNode visitFuncCallExpr(MLangParser.FuncCallExprContext ctx) {
+        String name = ctx.ID().getText();
+        List<ExprNode> args = new ArrayList<>();
+
+        if (ctx.arguments() != null) {
+            for (MLangParser.ExprContext argExpr : ctx.arguments().expr()) {
+                args.add((ExprNode) visit(argExpr));
+            }
+        }
+
+        return new FuncCallNode(name, args);
+    }
+
+    @Override
+    public ASTNode visitReturnStmt(MLangParser.ReturnStmtContext ctx) {
+        ExprNode expr = (ExprNode) visit(ctx.expr());
+        return new ReturnStmtNode(expr);
     }
 }

@@ -1,10 +1,14 @@
 package runtime;
+import java.util.Map;
+import java.util.HashMap;
 
 import ast.*;
 
 public class Interpreter implements ASTVisitor<Object> {
 
-    private final Environment environment = new Environment();
+    private Environment environment = new Environment();  // current environment (mutable during function calls)
+
+    private final Map<String, FuncDeclNode> functions = new HashMap<>();  // stores global function declarations
 
     @Override
     public Object visitProgram(ProgramNode node) {
@@ -24,8 +28,12 @@ public class Interpreter implements ASTVisitor<Object> {
 
     @Override
     public Object visitLetDecl(LetDeclNode node) {
+        // Step 1: Declare the variable name with a placeholder
+        environment.define(node.name(), null);
+        // Step 2: Evaluate the expression (now 'a' and 'b' are in the environment)
         Object value = node.initializer().accept(this);
-        environment.define(node.name(), value);
+        // Step 3: Assign the evaluated result
+        environment.assign(node.name(), value);
         return null;
     }
 
@@ -135,6 +143,52 @@ public class Interpreter implements ASTVisitor<Object> {
     @Override
     public Object visitExprStmt(ExprStmtNode node) {
         node.expression().accept(this);
+        return null;
+    }
+
+    @Override
+    public Object visitFuncDecl(FuncDeclNode node) {
+        functions.put(node.name, node);
+        return null;
+    }
+
+    @Override
+    public Object visitReturnStmt(ReturnStmtNode node) {
+        Object value = node.expression.accept(this);
+        throw new ReturnException(value);
+    }
+
+    @Override
+    public Object visitFuncCall(FuncCallNode node) {
+        FuncDeclNode fn = functions.get(node.name);
+        if (fn == null) {
+            throw new RuntimeException("Undefined function: " + node.name);
+        }
+    
+        if (fn.parameters.size() != node.arguments.size()) {
+            throw new RuntimeException("Function " + node.name + " expects " +
+                fn.parameters.size() + " arguments, got " + node.arguments.size());
+        }
+    
+        Environment oldEnv = this.environment;
+        Environment localEnv = new Environment();
+        //this.environment = localEnv;
+    
+        // Bind arguments
+        for (int i = 0; i < fn.parameters.size(); i++) {
+            String paramName = fn.parameters.get(i).name;
+            Object argValue = node.arguments.get(i).accept(this);
+            localEnv.define(paramName, argValue);
+        }
+        this.environment = localEnv;
+        try {
+            fn.body.accept(this);
+        } catch (ReturnException e) {
+            this.environment = oldEnv;
+            return e.value;
+        }
+        
+        this.environment = oldEnv;
         return null;
     }
 }

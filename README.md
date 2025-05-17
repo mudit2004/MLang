@@ -1,8 +1,7 @@
-
 # MLang 🧠
 
 **MLang** is a custom programming language with a unique syntax and structure, built using **ANTLR4** and Java.  
-It supports variables, arithmetic expressions, control flow (`if`, `while`), output (`show`), and block scoping.
+It supports variables, arithmetic expressions, functions, control flow (`if`, `while`), output (`show`), and block scoping.
 
 ---
 
@@ -37,6 +36,13 @@ It supports variables, arithmetic expressions, control flow (`if`, `while`), out
   ```mlang
   while (x < 5) [ ... ]
   ```
+- **Function declarations and calls**
+  ```mlang
+  func add(x > int, y > int) > int [
+      return x + y;
+  ]
+  let result > int = add(2, 3);
+  ```
 - **Block scoping** using square brackets
   ```mlang
   [ stmt1; stmt2; ]
@@ -50,6 +56,7 @@ It supports variables, arithmetic expressions, control flow (`if`, `while`), out
   - `ProgramNode`, `LetDeclNode`, `AssignStmtNode`, `ExprStmtNode`
   - `BinaryOpNode`, `IntLiteralNode`, `IdNode`
   - `IfStmtNode`, `WhileStmtNode`, `ShowStmtNode`, `BlockNode`
+  - `FuncDeclNode`, `FuncCallNode`, `ReturnStmtNode`
 - **AST built** via `MLangASTBuilder.java` using ANTLR `MLangBaseVisitor`
 - **AST pretty-printer** (`printAST`) for visualization
 
@@ -58,10 +65,11 @@ It supports variables, arithmetic expressions, control flow (`if`, `while`), out
 ### ✅ Interpreter
 - **Interpreter implemented** (`runtime/Interpreter.java`)
 - Executes programs by visiting AST nodes:
-  - Variable Environment Management
-  - Expression Evaluation
-  - Control Flow Execution (`if`, `while`)
-  - Output to Console using `show`
+  - Variable environment management
+  - Expression evaluation
+  - Function call/return stack with local scope
+  - Control flow execution (`if`, `while`)
+  - Output to console using `show`
 - Handles both **integer** and **boolean** conditions
 
 ---
@@ -70,14 +78,17 @@ It supports variables, arithmetic expressions, control flow (`if`, `while`), out
 
 ### 📂 Adding Test Files
 - Place `.ml` test programs inside the `tests/` folder.
-- Example: `tests/assign_while_show.ml`
+- Example: `tests/function_add_test.ml`
 
 ```mlang
-let i > int = 0;
-while (i < 3) [
-    show(i);
-    i = i + 1;
+func add(x > int, y > int) > int [
+    return x + y;
 ]
+
+let a > int = 10;
+let b > int = 20;
+let result > int = add(a, b);
+show(result);
 ```
 
 ### ▶️ Running the Project
@@ -95,7 +106,7 @@ make
 Edit `TestMLang.java`:
 
 ```java
-String inputCode = Files.readString(Paths.get("tests/assign_while_show.ml"));
+String inputCode = Files.readString(Paths.get("tests/function_add_test.ml"));
 ```
 
 Then rerun `make`.
@@ -125,40 +136,39 @@ MLANG/
 ## 🧪 Sample Input Program
 
 ```mlang
-let i > int = 0;
-while (i < 3) [
-    show(i);
-    i = i + 1;
+func add(x > int, y > int) > int [
+    return x + y;
 ]
+
+let result > int = add(2, 3);
+show(result);
 ```
 
 ### 📖 Sample AST Output
 
 ```
 Program
-  VarDecl: i > int
-    IntLiteral: 0
-  WhileStmt
-    Condition:
-      BinaryOp: <
-        Id: i
-        IntLiteral: 3
+  FuncDecl: add > int
+    Param: x > int
+    Param: y > int
     Body:
       Block
-        Show
-          Id: i
-        Assign: i
+        Return
           BinaryOp: +
-            Id: i
-            IntLiteral: 1
+            Id: x
+            Id: y
+  VarDecl: result > int
+    FuncCall: add
+      IntLiteral: 2
+      IntLiteral: 3
+  Show
+    Id: result
 ```
 
 ### 📤 Sample Execution Output
 
 ```
-0
-1
-2
+5
 ```
 
 ---
@@ -171,17 +181,20 @@ Program
 - **Classpath and Compilation Issues**:  
   Used `$(wildcard gen/*.java)` and explicitly included `src/runtime/*.java`.
 
-- **Parser Condition Handling**:  
-  Updated interpreter to allow both `boolean` and `integer` conditions for `if` and `while`.
+- **Variable Initialization Order**:  
+  Interpreter defines variable names *before* evaluating their initializers.
 
-- **Broken AST builds on invalid syntax**:  
-  Improved testing and syntax error checks in `.ml` files.
+- **Return flow handling in functions**:  
+  Used `ReturnException` to simulate non-local returns.
+
+- **Local scope for functions**:  
+  Functions execute in isolated environments (not modifying global state).
 
 ---
 
 ## 📜 Future Extensions
 - Add `float` and `bool` types fully (currently only `int` supported)
-- Add `function` definitions and calls
+- Add support for recursion and higher-order functions
 - Add `arrays`, `for` loops, and standard library support
 - Improve parser error messages (currently minimal error recovery)
 
