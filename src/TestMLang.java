@@ -15,7 +15,7 @@ public class TestMLang {
         //String inputCode = "x > int = 1 + 2;";
         //String inputCode = "if (1) [ x > int = 2; ] else [ x > int = 3; ]";
         //String inputCode = Files.readString(Paths.get("tests/test.ml"));
-        String inputCode = Files.readString(Paths.get("tests/function_add_test.ml"));
+        String inputCode = Files.readString(Paths.get("tests/take_test.ml"));
 
         // Step 1: Run ANTLR lexer and parser
         CharStream input = CharStreams.fromString(inputCode);
@@ -102,6 +102,8 @@ public class TestMLang {
         }else if (node instanceof ReturnStmtNode ret) {
             System.out.println(indentStr + "Return");
             printAST(ret.expression, indent + 1);
+        }else if (node instanceof InputExprNode) {
+           System.out.println(indentStr + "InputExpr (take)");
         }else {
             System.out.println(indentStr + "Unknown node: " + node.getClass().getSimpleName());
         }

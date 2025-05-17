@@ -191,4 +191,16 @@ public class Interpreter implements ASTVisitor<Object> {
         this.environment = oldEnv;
         return null;
     }
+
+    @Override
+    public Object visitInputExpr(InputExprNode node) {
+        try {
+            System.out.print("take> ");
+            java.util.Scanner scanner = new java.util.Scanner(System.in);
+            return Integer.parseInt(scanner.nextLine());
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid input. Expected integer.");
+        }
+    }
+
 }

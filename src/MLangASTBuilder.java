@@ -145,4 +145,9 @@ public class MLangASTBuilder extends MLangBaseVisitor<ASTNode> {
         ExprNode expr = (ExprNode) visit(ctx.expr());
         return new ReturnStmtNode(expr);
     }
+
+    @Override
+    public ASTNode visitInputExpr(MLangParser.InputExprContext ctx) {
+        return new InputExprNode();
+    }
 }

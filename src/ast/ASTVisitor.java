@@ -16,4 +16,5 @@ public interface ASTVisitor<T> {
     T visitFuncDecl(FuncDeclNode node);
     T visitFuncCall(FuncCallNode node);
     T visitReturnStmt(ReturnStmtNode node);
+    T visitInputExpr(InputExprNode node);
 }

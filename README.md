@@ -1,7 +1,8 @@
+
 # MLang 🧠
 
 **MLang** is a custom programming language with a unique syntax and structure, built using **ANTLR4** and Java.  
-It supports variables, arithmetic expressions, functions, control flow (`if`, `while`), output (`show`), and block scoping.
+It supports variables, arithmetic expressions, functions, control flow (`if`, `while`), output (`show`), input (`take()`), and block scoping.
 
 ---
 
@@ -12,30 +13,42 @@ It supports variables, arithmetic expressions, functions, control flow (`if`, `w
   ```mlang
   let x > int = 5;
   ```
+
 - **Assignments**
   ```mlang
   x = x + 1;
   ```
+
 - **Arithmetic expressions**
   ```mlang
   x + 3 * 4;
   ```
+
 - **Comparison expressions**
   ```mlang
   if (x == 0) [ ... ]
   ```
+
 - **`show(...)` for printing values**
   ```mlang
   show(x);
   ```
+
+- **`take()` for user input**
+  ```mlang
+  let x > int = take();
+  ```
+
 - **`if-else` control flow**
   ```mlang
   if (x > 0) [ show(1); ] else [ show(0); ]
   ```
+
 - **`while` loops**
   ```mlang
   while (x < 5) [ ... ]
   ```
+
 - **Function declarations and calls**
   ```mlang
   func add(x > int, y > int) > int [
@@ -43,6 +56,7 @@ It supports variables, arithmetic expressions, functions, control flow (`if`, `w
   ]
   let result > int = add(2, 3);
   ```
+
 - **Block scoping** using square brackets
   ```mlang
   [ stmt1; stmt2; ]
@@ -50,11 +64,11 @@ It supports variables, arithmetic expressions, functions, control flow (`if`, `w
 
 ---
 
-### ✅ Parsing + AST
+## ✅ Parsing + AST
 - **ANTLR4 Grammar** (`MLang.g4`) custom defined
 - **AST Node Hierarchy**:
   - `ProgramNode`, `LetDeclNode`, `AssignStmtNode`, `ExprStmtNode`
-  - `BinaryOpNode`, `IntLiteralNode`, `IdNode`
+  - `BinaryOpNode`, `IntLiteralNode`, `IdNode`, `InputExprNode`
   - `IfStmtNode`, `WhileStmtNode`, `ShowStmtNode`, `BlockNode`
   - `FuncDeclNode`, `FuncCallNode`, `ReturnStmtNode`
 - **AST built** via `MLangASTBuilder.java` using ANTLR `MLangBaseVisitor`
@@ -62,7 +76,7 @@ It supports variables, arithmetic expressions, functions, control flow (`if`, `w
 
 ---
 
-### ✅ Interpreter
+## ✅ Interpreter
 - **Interpreter implemented** (`runtime/Interpreter.java`)
 - Executes programs by visiting AST nodes:
   - Variable environment management
@@ -70,6 +84,7 @@ It supports variables, arithmetic expressions, functions, control flow (`if`, `w
   - Function call/return stack with local scope
   - Control flow execution (`if`, `while`)
   - Output to console using `show`
+  - Input from user using `take()`
 - Handles both **integer** and **boolean** conditions
 
 ---
@@ -78,17 +93,11 @@ It supports variables, arithmetic expressions, functions, control flow (`if`, `w
 
 ### 📂 Adding Test Files
 - Place `.ml` test programs inside the `tests/` folder.
-- Example: `tests/function_add_test.ml`
+- Example: `tests/input_test.ml`
 
 ```mlang
-func add(x > int, y > int) > int [
-    return x + y;
-]
-
-let a > int = 10;
-let b > int = 20;
-let result > int = add(a, b);
-show(result);
+let x > int = take();
+show(x + 1);
 ```
 
 ### ▶️ Running the Project
@@ -106,7 +115,7 @@ make
 Edit `TestMLang.java`:
 
 ```java
-String inputCode = Files.readString(Paths.get("tests/function_add_test.ml"));
+String inputCode = Files.readString(Paths.get("tests/input_test.ml"));
 ```
 
 Then rerun `make`.
@@ -136,39 +145,27 @@ MLANG/
 ## 🧪 Sample Input Program
 
 ```mlang
-func add(x > int, y > int) > int [
-    return x + y;
-]
-
-let result > int = add(2, 3);
-show(result);
+let num > int = take();
+show(num + 1);
 ```
 
 ### 📖 Sample AST Output
 
 ```
 Program
-  FuncDecl: add > int
-    Param: x > int
-    Param: y > int
-    Body:
-      Block
-        Return
-          BinaryOp: +
-            Id: x
-            Id: y
-  VarDecl: result > int
-    FuncCall: add
-      IntLiteral: 2
-      IntLiteral: 3
+  VarDecl: num > int
+    InputExpr (take)
   Show
-    Id: result
+    BinaryOp: +
+      Id: num
+      IntLiteral: 1
 ```
 
 ### 📤 Sample Execution Output
 
 ```
-5
+take> 42
+43
 ```
 
 ---
@@ -189,6 +186,9 @@ Program
 
 - **Local scope for functions**:  
   Functions execute in isolated environments (not modifying global state).
+
+- **Input support**:  
+  Added `take()` expression for reading integers via `Scanner`.
 
 ---
 

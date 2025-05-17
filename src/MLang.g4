@@ -87,6 +87,7 @@ expr
     | expr op=('*' | '/') expr                               # MulDivExpr
     | expr op=('+' | '-') expr                               # AddSubExpr
     | ID '(' arguments? ')'                                  # FuncCallExpr
+    | 'take' '(' ')'                                         # InputExpr        // <-- NEW
     | INT                                                    # IntLiteral
     | ID                                                     # IdExpr
     ;
